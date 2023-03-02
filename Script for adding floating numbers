@@ -1,0 +1,38 @@
+#!/bin/bash
+#################Script for making operations on floating numbers###########################
+##      Exit codes:
+##              0:Success
+##              1:Insufficient parameters
+##              2:The 2nd par is not operator 
+##              3:The 1st and 3rd pars are not numbers 
+
+read -p "Please enter the first number " VAL1
+read -p "Please enter the second number " VAL2
+read -p "Please enter your operation {+,-,x,/}: " OPERATOR
+
+##Check for number of parameters
+#[ ${#} -ne 3 ] && exit 1
+
+##Check for operator
+
+[ ${OPERATOR} != "+" ] && [ ${OPERATOR} != "-" ]  && [ ${OPERATOR} != "x" ]  && [ ${OPERATOR} != "/" ] &&  exit 2
+
+##Check for 1st and 3rd pars if not numbers 
+
+NUM=$( echo ${VAL1} | grep -w "\-\{0,1\}[0-9]*" | wc -l)
+[ ${NUM} -eq 0 ] && exit 3
+
+NUM=$( echo ${VAL2} | grep -w "\-\{0,1\}[0-9]*" | wc -l)
+
+[ ${NUM} -eq 0 ] && exit 3
+
+#Main
+
+if [ ${OPERATOR} == "x" ]
+then
+        OPERATOR=\*
+fi
+
+echo "scale=2;${VAL1} ${OPERATOR} ${VAL2}" | bc
+
+exit 0
