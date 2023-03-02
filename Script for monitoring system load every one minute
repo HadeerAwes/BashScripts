@@ -1,0 +1,31 @@
+#!/bin/bash
+####################Script for monitoring the system 
+LOAD=$(uptime)
+#read LOAD < /shell_script/task2/test
+LOAD1=$(echo ${LOAD} | awk '{print $9}' | cut -f 1 -d ,)
+LOAD2=$(echo ${LOAD} | awk '{print $10}' | cut -f 1 -d ,)
+LOAD3=$(echo ${LOAD} | awk '{print $11}')
+
+#The output is 1 when it is true so we put the condition if decreasing instead of increasing to flip the condition so we can use it in the if condition 
+
+TEST1=$( echo " ${LOAD1} < ${LOAD2} " | bc )
+
+TEST2=$( echo " ${LOAD2} < ${LOAD3} " | bc )
+
+
+if [ ${TEST1} -eq 0 ] && [ ${TEST2} -eq 0 ]
+then
+        echo ${LOAD} | awk '{print $1" "$7" "$8$9$10$11}' >> /var/log/systemLoad
+        echo "Subject: Server 192.168.170.160 load
+              Body: 
+                        Dear,
+                                The system ${HOSTNAME} runs with IP 192.168.170.160 has a load of
+                                1MIN load: ${LOAD1}
+                                5MIN load: ${LOAD2}
+                                15MIN load: ${LOAD3}
+                        thank you.
+                " >> /tmp/events
+fi
+############################################################################################################################
+To make the script runs every one minute provide this line in the crontab -e 
+*      *       *       *       *       bash /shell_script/task2/main.sh
